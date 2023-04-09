@@ -3,42 +3,51 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-public class Tile : MonoBehaviour, IPointerUpHandler,IPointerDownHandler
+public class Tile : MonoBehaviour, IPointerUpHandler, IPointerDownHandler
 {
     public int Number;
-    public Sprite image;
+    public Sprite numberImage, defaultImage, flagImage;
     Manager manager;
+    UIManager uiManager;
     public int xPos, yPos;
-    bool open;
+    public bool open;
+    public bool flag;
+    public bool canLeftClick = true;
+    public bool canRightClick = true;
     private void Start()
     {
-        manager = GameObject.Find("Manager").GetComponent<Manager>();
+        GameObject Manager = GameObject.Find("Manager");
+        manager = Manager.GetComponent<Manager>();
+        uiManager = Manager.GetComponent<UIManager>();
+
     }
     public void SetTile(int number , Sprite sprite, int x, int y)
     {
         Number = number;
-        image = sprite;
+        numberImage = sprite;
         xPos = x;
         yPos = y;
-        Debug.Log("tile " + xPos + " " + yPos);
     }
 
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        //Debug.Log(Number);
-    }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        //GetComponent<Image>().sprite = image;
-        ShowTiles(this);
-        //Debug.Log(this.Number);
-        if (Number == 0)
+        if (eventData.pointerId == -1 )
         {
-            open = true;
-           // GetComponent<Image>().color = Color.red;
-            Check(xPos, yPos);
-            Debug.Log("tile" + xPos + " " + yPos);
+            if (canLeftClick&&!manager.gameOver)
+            {
+                ShowTiles(this);
+                if (Number == 0)
+                {
+                    open = true;
+                    Check(xPos, yPos);
+                }
+                if (Number == -1) { uiManager.GameOver(); manager.gameOver = true; }
+            }
+        }
+        else if(canRightClick&&!manager.gameOver)
+        {
+            Flag(this);
         }
     }
     void Check(int xPos, int yPos)
@@ -47,18 +56,43 @@ public class Tile : MonoBehaviour, IPointerUpHandler,IPointerDownHandler
         foreach (var item in manager.Neighbours(xPos, yPos))
         {
             int tileNumber = manager.tiles[item].Number;
-            Debug.Log(tileNumber);
-            if (tileNumber==0&&manager.tiles[item].open==false) Check(item/manager.XCount, item%manager.XCount);
-            else 
+            if (tileNumber == 0 && manager.tiles[item].open == false) 
+            { Debug.Log((item / manager.XCount)+" "+(item % manager.XCount));   // CHECK ALL NEIBORS ----FIX
+                //Check(item / manager.XCount, item % manager.XCount);
+            }
+           // else
+
                 ShowTiles(manager.tiles[item]);
+
         }
     }
     void ShowTiles(params Tile[] tiles )
     {
         foreach (var item in tiles)
         {
-            item.GetComponent<Image>().sprite = item.GetComponent<Tile>().image;
+            item.GetComponent<Image>().sprite = item.GetComponent<Tile>().numberImage;
+            item.canRightClick = false;
+            item.canLeftClick = false;
+            if (item.Number == 0) item.GetComponent<Image>().color = Color.white;
             item.open = true;
         }
+    }
+    void Flag(Tile tile)
+    {
+        if (flag)
+        {
+            tile.GetComponent<Image>().sprite = defaultImage;flag = false; canLeftClick = true;
+            tile.GetComponent<Image>().color = Color.green;
+        }
+        else
+        {
+            tile.GetComponent<Image>().sprite = flagImage; flag = true; canLeftClick = false;
+            tile.GetComponent<Image>().color = Color.white;
+        }
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+       
     }
 }

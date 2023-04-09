@@ -18,6 +18,7 @@ public class Manager : MonoBehaviour
     public int[] field;
     public int[,] field2;
     public List<Tile> tiles;
+    public bool gameOver = false;
     public void DefineSize()
     {
         var grid = image.GetComponent<GridLayoutGroup>();
@@ -34,6 +35,7 @@ public class Manager : MonoBehaviour
         {
             GameObject gameObject =Instantiate(obj, image.transform);
             tiles.Add(gameObject.GetComponent<Tile>());
+            tiles[i].GetComponent<Image>().color = Color.green;
         }
         
       
@@ -60,7 +62,6 @@ public class Manager : MonoBehaviour
             else field[randomNumber] = -1;
             bombCount--;
             tiles[randomNumber].SetTile(-1, bomb, randomNumber/xCount, randomNumber%xCount);
-           // Debug.Log(randomNumber + " " + randomNumber / xCount + " " + randomNumber % xCount);
         }
         for (int i = 0; i < yCount; i++)
         {
@@ -86,7 +87,7 @@ public class Manager : MonoBehaviour
                 if (field2[i, j] != -1)
                 {
                     Neighbours(i, j);
-                    if (field2[i, j] > 0) { tiles[i * xCount + j].SetTile(field2[i, j], numbers[field2[i, j] - 1],i,j); }
+                    if (field2[i, j] > 0) { tiles[i * xCount + j].SetTile(field2[i, j], numbers[field2[i, j] - 1],j,i); }
                     else tiles[i * xCount + j].SetTile(field2[i, j], blank, i, j);
                 }
             }
@@ -111,7 +112,7 @@ public class Manager : MonoBehaviour
                        // neibours.Add(tiles[(i + k)*xCount + j + p]);
                         neibours[neib] = (i + k)*xCount + j + p;
                         neib++;
-                        Debug.Log(((i + k) * xCount + j + p)); 
+                       // Debug.Log(((i + k) * xCount + j + p)); 
                     }
                 }
             }

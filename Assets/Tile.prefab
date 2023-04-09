@@ -90,4 +90,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Number: 0
-  image: {fileID: 0}
+  numberImage: {fileID: 0}
+  defaultImage: {fileID: 7482667652216324306, guid: adb8a85cb8d6cfd42907a795f7bff86b, type: 3}
+  flagImage: {fileID: 21300000, guid: c46573e60cef09d49abcb76642b11283, type: 3}
+  xPos: 0
+  yPos: 0
+  open: 0
+  flag: 0
+  canClick: 1
